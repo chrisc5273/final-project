@@ -1,5 +1,5 @@
 import { body, validationResult } from 'express-validator';
-import { handleValidationErrors } from './handleValidation';
+import { handleValidationErrors } from './handleValidation.js';
 export const validateCreateProperty = [
   // 1. Name is required and must be a string
   body('name')
