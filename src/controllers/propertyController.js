@@ -1,4 +1,4 @@
-import * as propertyService from '../services/propertyServices.js';
+import * as propertyService from '../services/propertyService.js';
 
 export async function getAllProperties(req,res,next){
     const properties = await propertyService.getAllProperties();
