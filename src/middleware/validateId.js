@@ -1,9 +1,6 @@
 import {param, query, oneOf, body} from 'express-validator';
 import {handleValidationErrors} from './handleValidation.js';
-import {PrismaClient} from '@prisma/client';
-
-const prisma = new PrismaClient();
-
+import prisma from '../config/db.js';
 
 export const validateId = [
     param('id')
