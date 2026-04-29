@@ -1,28 +1,19 @@
 import Prisma from '../config/db.js';
 
-export async function finaAllUsers(completedFilter){
-    const whereClause = completedFilter !== undefined
-    ? { completed: completedFilter }
-    : {};
-    
-    return Prisma.users.findMany({
-        where: whereClause
-    });
-
+export async function getAllUsers(){
+    return Prisma.users.findMany();
 }
 
 export async function getUserById(id){
     return Prisma.users.findUnique({
-        where: {id}
+        where: {id: Number(id)},
     });
-
 }
 
 export async function getUserByEmail(email){
-    return prisma.users.findUnique({
-        where: {email}
+    return Prisma.users.findUnique({
+        where: { email: email.toLowerCase() },
     });
-
 }
 
 export async function createUser(data){
@@ -31,8 +22,15 @@ export async function createUser(data){
     });
 }
 
-export async function deleteUser(userName){
-    return prisma.users.delete({
-        where: {name: userName}
-    })
+export async function updateUser(id, updateData){
+    return Prisma.users.update({
+        where: { id: Number(id) },
+        data: updateData,
+    });
+}
+
+export async function deleteUser(id){
+    return Prisma.users.delete({
+        where: { id: Number(id) },
+    });
 }

@@ -1,14 +1,15 @@
 import express from 'express';
 import * as userController from '../controllers/userController.js';
-import { validateCreateUser } from '../middleware/validateId.js';
-import { authenticate } from '../middleware/authenticateToken.js';
+import { validateCreateUser, validateUpdateUser } from '../middleware/userValidation.js';
+import { authenticateToken } from '../middleware/authenticateToken.js';
 import { validateId } from '../middleware/validateId.js';
 import { authorizeRoles } from '../middleware/authorizeRoles.js';
 const router = express.Router();
 
-router.get('/', userController.getAllUsers);
-router.get(':id', valdiateId ,userController.getUserById);
-router.post('/', authenticate ,validateCreateUser ,userController.createUser);
-router.put(':id', authenticate ,validateId, userController.updateUser)
-router.delete(':id',validateId, authenticate, authorizeRoles('ADMIN')
-, userController.deleteUser );
+router.get('/', authenticateToken, authorizeRoles('ADMIN'), userController.getAllUsers);
+router.get('/:id', authenticateToken, validateId, userController.getUserById);
+router.post('/', authenticateToken, authorizeRoles('ADMIN', 'MANAGER'), validateCreateUser, userController.createUser);
+router.put('/:id', authenticateToken, validateId, authorizeRoles('ADMIN', 'MANAGER'), validateUpdateUser, userController.updateUser);
+router.delete('/:id', authenticateToken, validateId, authorizeRoles('ADMIN'), userController.deleteUser);
+
+export default router;

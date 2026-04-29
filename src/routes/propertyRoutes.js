@@ -1,6 +1,6 @@
 // routes/propertyRoutes.js
 import express from 'express';
-import { createProperty, getPropertyById, deleteProperty, getAllProperties } from '../controllers/propertyController.js';
+import { createProperty, getPropertyById, deleteProperty, getAllProperties, updateProperty } from '../controllers/propertyController.js';
 
 import { authenticateToken } from '../middleware/authenticateToken.js';
 import { authorizeRoles } from '../middleware/authorizeRoles.js';
@@ -16,7 +16,7 @@ router.post(
   validateCreateProperty, 
   createProperty
 );
-router.get('/',getAllProperties);
+router.get('/', authenticateToken, getAllProperties);
 
 // 1. Logged in? -> 2. Is the URL ID a number? -> 3. Fetch it
 router.get(
@@ -35,5 +35,5 @@ router.delete(
   deleteProperty
 );
 
-router.put(':id', authenticateToken, authorizeRoles('ADMIN'), validateId, validateCreateProperty, updateProperty);
+router.put('/:id', authenticateToken, authorizeRoles('ADMIN'), validateId, validateCreateProperty, updateProperty);
 export default router;

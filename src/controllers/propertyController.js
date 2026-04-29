@@ -1,7 +1,7 @@
 import * as propertyService from '../services/propertyServices.js';
 
 export async function getAllProperties(req,res,next){
-    const properties = await properties.getAllProperties();
+    const properties = await propertyService.getAllProperties();
     res.json(properties);
 
 }

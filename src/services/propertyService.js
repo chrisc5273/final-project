@@ -1,6 +1,6 @@
-import * as propertyRepo from '../repositories/propertyRepo';
+import * as propertyRepo from '../repositories/propertyRepo.js';
 
-export async function getAllproperties(){
+export async function getAllProperties(){
     return propertyRepo.getAllProperties();
 }
 export async function getPropertyById(id){

@@ -41,11 +41,9 @@ model timesheets {
   propertyid           Int
   clockedin            DateTime               @db.Timestamp(6)
   clockedout           DateTime?              @db.Timestamp(6)
-  clockinphotourl      String
   checklistsubmissions checklistsubmissions[]
   properties           properties             @relation(fields: [propertyid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_timesheet_property")
   users                users                  @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_timesheet_user")
-  violations           violations[]
 }
 
 model users {

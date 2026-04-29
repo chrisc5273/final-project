@@ -1,0 +1,899 @@
+openapi: 3.1.0
+info:
+  title: Final Project API
+  version: 1.0.0
+  description: >
+    API for property management, user roles, timesheets, and checklist submissions.
+    Authentication is handled with JWT bearer tokens.
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+  - url: https://<your-render-service>.onrender.com
+    description: Render production server
+tags:
+  - name: Authentication
+    description: User sign-up and login operations
+  - name: Users
+    description: User management endpoints
+  - name: Properties
+    description: Property management and scheduling
+  - name: Checklist Items
+    description: Tasks assigned to properties
+  - name: Checklist Submissions
+    description: Submission records for completed checklist items
+  - name: Timesheets
+    description: Time tracking for assigned users and properties
+paths:
+  /api/auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthSignUp'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User created
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate a user and return a JWT access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLogin'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/users:
+    get:
+      summary: List all users
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new user
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: The newly created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a single user by id
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update an existing user
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '201':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete a user by id
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted user record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/properties:
+    get:
+      summary: List all properties
+      tags:
+        - Properties
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of properties
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Property'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new property
+      tags:
+        - Properties
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyCreate'
+      responses:
+        '201':
+          description: Property created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/properties/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get property details by id
+      tags:
+        - Properties
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Property details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update an existing property
+      tags:
+        - Properties
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyCreate'
+      responses:
+        '201':
+          description: Updated property
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete a property by id
+      tags:
+        - Properties
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted property record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/checklist-items:
+    get:
+      summary: List all checklist items
+      tags:
+        - Checklist Items
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of checklist items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChecklistItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new checklist item
+      tags:
+        - Checklist Items
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChecklistItemCreate'
+      responses:
+        '201':
+          description: Checklist item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/checklist-items/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get checklist item details by id
+      tags:
+        - Checklist Items
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Checklist item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update an existing checklist item
+      tags:
+        - Checklist Items
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChecklistItemCreate'
+      responses:
+        '201':
+          description: Updated checklist item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete a checklist item by id
+      tags:
+        - Checklist Items
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted checklist item record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/checklist-submissions:
+    get:
+      summary: List all checklist submissions
+      tags:
+        - Checklist Submissions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of checklist submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChecklistSubmission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new checklist submission
+      tags:
+        - Checklist Submissions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChecklistSubmissionCreate'
+      responses:
+        '201':
+          description: Checklist submission created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistSubmission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/checklist-submissions/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a checklist submission by id
+      tags:
+        - Checklist Submissions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Checklist submission details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistSubmission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update a checklist submission
+      tags:
+        - Checklist Submissions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChecklistSubmissionCreate'
+      responses:
+        '201':
+          description: Updated checklist submission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistSubmission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete a checklist submission by id
+      tags:
+        - Checklist Submissions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted checklist submission record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistSubmission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/timesheets:
+    get:
+      summary: List all timesheets
+      tags:
+        - Timesheets
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of timesheets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Timesheet'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new timesheet
+      tags:
+        - Timesheets
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimesheetCreate'
+      responses:
+        '201':
+          description: Timesheet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/timesheets/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a timesheet by id
+      tags:
+        - Timesheets
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Timesheet details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update a timesheet
+      tags:
+        - Timesheets
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimesheetCreate'
+      responses:
+        '201':
+          description: Updated timesheet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete a timesheet by id
+      tags:
+        - Timesheets
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted timesheet record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AuthSignUp:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+        password:
+          type: string
+          format: password
+          example: StrongPassword123!
+        role:
+          type: string
+          enum:
+            - PORTER
+            - MANAGER
+            - ADMIN
+            - USER
+          example: PORTER
+    AuthLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+        password:
+          type: string
+          format: password
+          example: StrongPassword123!
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+        phonenumber:
+          type: string
+          nullable: true
+          example: 555-0123
+        role:
+          type: string
+          example: PORTER
+        schedule:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            monday: 08:00-16:00
+            tuesday: 08:00-16:00
+    UserCreate:
+      allOf:
+        - $ref: '#/components/schemas/User'
+      required:
+        - name
+        - email
+        - password
+      properties:
+        password:
+          type: string
+          format: password
+          example: StrongPassword123!
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane.updated@example.com
+        password:
+          type: string
+          format: password
+          example: NewPassword456!
+        phonenumber:
+          type: string
+          example: 555-0456
+        role:
+          type: string
+          enum:
+            - PORTER
+            - MANAGER
+            - ADMIN
+            - USER
+          example: MANAGER
+    Property:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Downtown Residence
+        address:
+          type: string
+          example: 100 Main Street, Unit 5
+        starttime:
+          type: string
+          nullable: true
+          example: 08:00
+    PropertyCreate:
+      type: object
+      required:
+        - name
+        - address
+      properties:
+        name:
+          type: string
+          example: Downtown Residence
+        address:
+          type: string
+          example: 100 Main Street, Unit 5
+        starttime:
+          type: string
+          example: 08:00
+    ChecklistItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        propertyid:
+          type: integer
+          example: 1
+        taskdescription:
+          type: string
+          example: Vacuum the lobby
+        isactive:
+          type: boolean
+          example: true
+    ChecklistItemCreate:
+      type: object
+      required:
+        - propertyid
+        - taskdescription
+      properties:
+        propertyid:
+          type: integer
+          example: 1
+        taskdescription:
+          type: string
+          example: Vacuum the lobby
+        isactive:
+          type: boolean
+          example: true
+    ChecklistSubmission:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        timesheetid:
+          type: integer
+          example: 1
+        checklistitemid:
+          type: integer
+          example: 1
+        photourl:
+          type: string
+          example: https://example.com/photos/submission-1.jpg
+        completedat:
+          type: string
+          format: date-time
+          example: 2026-05-01T09:15:00.000Z
+    ChecklistSubmissionCreate:
+      type: object
+      required:
+        - timesheetid
+        - checklistitemid
+        - photourl
+        - completedat
+      properties:
+        timesheetid:
+          type: integer
+          example: 1
+        checklistitemid:
+          type: integer
+          example: 1
+        photourl:
+          type: string
+          example: https://example.com/photos/submission-1.jpg
+        completedat:
+          type: string
+          format: date-time
+          example: 2026-05-01T09:15:00.000Z
+    Timesheet:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userid:
+          type: integer
+          example: 3
+        propertyid:
+          type: integer
+          example: 1
+        clockedin:
+          type: string
+          format: date-time
+          example: 2026-05-08T08:00:00.000Z
+        clockedout:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2026-05-08T16:00:00.000Z
+    TimesheetCreate:
+      type: object
+      required:
+        - userid
+        - propertyid
+        - clockedin
+      properties:
+        userid:
+          type: integer
+          example: 3
+        propertyid:
+          type: integer
+          example: 1
+        clockedin:
+          type: string
+          format: date-time
+          example: 2026-05-08T08:00:00.000Z
+        clockedout:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2026-05-08T16:00:00.000Z
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Resource not found
+        details:
+          type: array
+          items:
+            type: string
+          example:
+            - PropertyID must be a number
+  responses:
+    BadRequest:
+      description: Validation or request error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Unauthorized:
+      description: Authentication failed or missing token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'

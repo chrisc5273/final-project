@@ -17,11 +17,11 @@ export const validateId = [
 
 export const validateCreateUser = [
     body('email').custom(async (email) => {
-        const existingUser = await prisma.users.findUniqe({
+        const existingUser = await prisma.users.findUnique({
             where: {email: email.toLowerCase()},
         });
 
-        if(existingUser) throw new Error('User Email already Exists');
+        if(existingUser) throw new Error('User Email already exists');
 
         return true;
 
