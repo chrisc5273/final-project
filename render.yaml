@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: final-project-api
-    env: node
-    region: oregon
-    plan: free
-    buildCommand: npm install && npm run seed
-    startCommand: npm start

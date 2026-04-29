@@ -7,8 +7,11 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "generate": "npx prisma generate",
+    "migrate:deploy": "npx prisma migrate deploy",
     "seed": "node prisma/seed.js",
-    "postinstall": "npm run seed --if-present",
+    "seed:prod": "node prisma/seed.js",
+    "postinstall": "npm run generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
