@@ -32,6 +32,10 @@ app.use('/api/checklist-items', checklistItemRoutes);
 app.use('/api/checklist-submissions', checklistSubmissionRoutes);
 app.use('/api/timesheets', timesheetRoutes);
 
+app.get('/', (req,res) => {
+    res.send('Welcome to the Property Management API');
+    res.json({message: 'Api Running successfully'});
+})
 app.use((req,res,next) => {
     const err = new Error('Not found');
     err.status = 404;
