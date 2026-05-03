@@ -8,7 +8,7 @@ info:
 servers:
   - url: http://localhost:3000
     description: Local development server
-  - url: hhttps://task-api-service-wtk4.onrender.com
+  - url: https://task-api-service-wtk4.onrender.com
     description: Render production server
 tags:
   - name: Authentication
